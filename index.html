@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>E-Card Game</title>
+  <style>
+    .card-container {
+      border: 1px solid black;
+      width: 880px;
+      height: 220px;
+      margin-bottom: 20px;
+    }
+
+    .card {
+      border: 1px solid black;
+      width: 150px;
+      height: 200px;
+      display: inline-block;
+      margin: 10px;
+      text-align: center;
+      line-height: 200px;
+      font-size: 48px;
+    }
+
+    .resulttext {
+      font-family: Arial, Helvetica, sans-serif;
+      font-weight: bold;
+      font-size: 200;
+    }
+  </style>
+</head>
+
+<body>
+  <h2>Your Cards</h2>
+  <div class="card-container" id="playerCardsContainer"></div>
+  <h2>Opponent's Cards</h2>
+  <div class="card-container" id="opponentCardsContainer"></div>
+  <button onclick="startGame()">Start Game</button>
+  <button onclick="refreshPage()">Refresh</button>
+  <p class="resulttext" id="result"></p>
+
+  <script>
+    var playerHands = ['✊', '✊', '✊', '✊', '✋'];
+    var opponentHands = ['✊', '✊', '✊', '✊', '✌️'];
+    let opponentArray = [];
+    const result = document.getElementById("result");
+
+    // ランダムに要素を選ぶ関数
+    function select(array) {
+      // 配列の要素数を取得
+      let length = array.length;
+      // ランダムなインデックスを生成
+      let randomIndex = Math.floor(Math.random() * length);
+      // ランダムに選択された要素を返す
+      let chosenOne = array[randomIndex];
+
+      disable(randomIndex);
+
+      // 選択された手札を消す
+      array.splice(randomIndex, 1);
+
+      return chosenOne;
+    }
+
+    // カードがクリックされたときの処理
+    function battle(cardElement){
+      cardElement.style.borderColor="red";
+      
+      let playerCard = cardElement;
+      let opponentCard = select(opponentArray);
+
+      judge(playerCard, opponentCard);
+    }
+
+    function createCardElement(hand) {
+      var cardElement = document.createElement('button');
+      cardElement.classList.add('card');
+      cardElement.textContent = hand;
+
+      // クリックされたら battle 関数を実行するイベントを追加
+      cardElement.addEventListener('click', function() {
+        battle(cardElement);
+      });
+      
+      return cardElement;
+    }
+
+
+    function startGame() {
+      // id="playerCardsContainer" の要素に変数playerCardsContainerとしてアクセス
+      var playerCardsContainer = document.getElementById('playerCardsContainer');
+      var opponentCardsContainer = document.getElementById('opponentCardsContainer');
+      
+      // コンテナを初期化
+      playerCardsContainer.innerHTML = '';
+      opponentCardsContainer.innerHTML = '';
+
+      // プレイヤーのカードを表示
+      playerHands.forEach(function(hand) {
+        var cardElement = createCardElement(hand);
+        playerCardsContainer.appendChild(cardElement);
+      });
+
+      // CPU のカードを表示
+      opponentHands.forEach(function(hand) {
+        var cardElement = createCardElement(hand);
+        opponentArray.push(cardElement);
+        opponentCardsContainer.appendChild(cardElement);
+      });
+
+      // 実演：色変更（opponentCardsContainerの枠線を赤色にするコード）
+      opponentCardsContainer.style.borderColor="red";
+      // opponentArray[3].style.borderColor="red";
+    }
+
+    function judge(playerCard, opponentCard){
+       const player = playerCard.textContent;
+       const cpu = opponentCard.textContent;
+       if (player === "✊" && cpu === "✌️") {
+        result.textContent = "You win!";
+       } else if(player === "✋" && cpu === "✊"){
+        result.textContent = "You win!";
+       } else if(player === "✋" && cpu === "✌️"){
+        result.textContent = "You Lose...";
+       }
+    }
+
+    function refreshPage() {
+      location.reload(); // ページをリロードする
+    }
+
+    function disable(index){
+      opponentArray[index].style.borderColor="red";
+    }
+
+  </script>
+</body>
+</html>
